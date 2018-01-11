@@ -8,6 +8,7 @@ S_SRCS += \
 
 C_SRCS += \
 ../Src/MicroServo.c \
+../Src/echo_locator.c \
 ../Src/gpio.c \
 ../Src/lcd5110.c \
 ../Src/lcd5110_hal.c \
@@ -24,6 +25,7 @@ C_SRCS += \
 
 OBJS += \
 ./Src/MicroServo.o \
+./Src/echo_locator.o \
 ./Src/gpio.o \
 ./Src/lcd5110.o \
 ./Src/lcd5110_hal.o \
@@ -41,6 +43,7 @@ OBJS += \
 
 C_DEPS += \
 ./Src/MicroServo.d \
+./Src/echo_locator.d \
 ./Src/gpio.d \
 ./Src/lcd5110.d \
 ./Src/lcd5110_hal.d \
@@ -61,7 +64,7 @@ Src/%.o: ../Src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Compiler'
 	@echo $(PWD)
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 '-D__weak=__attribute__((weak))' '-D__packed=__attribute__((__packed__))' -DUSE_HAL_DRIVER -DSTM32F303xC -I"C:/chpoc/SuperProject/Inc" -I"C:/chpoc/SuperProject/Drivers/STM32F3xx_HAL_Driver/Inc" -I"C:/chpoc/SuperProject/Drivers/STM32F3xx_HAL_Driver/Inc/Legacy" -I"C:/chpoc/SuperProject/Drivers/CMSIS/Device/ST/STM32F3xx/Include" -I"C:/chpoc/SuperProject/Drivers/CMSIS/Include" -I"C:/chpoc/SuperProject/Inc"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 '-D__weak=__attribute__((weak))' '-D__packed=__attribute__((__packed__))' -DUSE_HAL_DRIVER -DSTM32F303xC '-D__weak=__attribute__((weak))' '-D__packed="__attribute__((__packed__))"' -I"/home/inkognita/STMProjects/SemesterProject/Inc" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/STM32F3xx_HAL_Driver/Inc" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/STM32F3xx_HAL_Driver/Inc/Legacy" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/CMSIS/Device/ST/STM32F3xx/Include" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/CMSIS/Include" -I"/home/inkognita/STMProjects/SemesterProject/Inc" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/CMSIS/Include" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/CMSIS/Include" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/CMSIS/Include" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/CMSIS/Include" -I"/home/inkognita/STMProjects/SemesterProject/Drivers/CMSIS/Include"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

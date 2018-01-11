@@ -28,13 +28,13 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: SuperProject.elf
+all: SemesterProject.elf
 
 # Tool invocations
-SuperProject.elf: $(OBJS) $(USER_OBJS) ../STM32F303VCTx_FLASH.ld
+SemesterProject.elf: $(OBJS) $(USER_OBJS) ../STM32F303VCTx_FLASH.ld
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -u _printf_float -u _scanf_float -T"../STM32F303VCTx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "SuperProject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -u _printf_float -u _scanf_float -T"../STM32F303VCTx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "SemesterProject.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
@@ -46,8 +46,8 @@ clean:
 
 post-build:
 	-@echo 'Generating binary and Printing size information:'
-	arm-none-eabi-objcopy -O binary "SuperProject.elf" "SuperProject.bin"
-	arm-none-eabi-size "SuperProject.elf"
+	arm-none-eabi-objcopy -O binary "SemesterProject.elf" "SemesterProject.bin"
+	arm-none-eabi-size "SemesterProject.elf"
 	-@echo ' '
 
 .PHONY: all clean dependents

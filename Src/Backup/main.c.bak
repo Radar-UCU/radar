@@ -41,17 +41,17 @@
 #include "spi.h"
 #include "tim.h"
 #include "gpio.h"
-#include "screen.h"
-#include "MicroServo.h"
 
 /* USER CODE BEGIN Includes */
-#define SystemCoreClockInMHz (SystemCoreClock/1000000)
+//#define SystemCoreClockInMHz (SystemCoreClock/1000000)
 #define TRIG_GPIO_Port GPIOD
 #define TRIG_Pin GPIO_PIN_13
 #define ECHO_GPIO_Port GPIOD
 #define ECHO_Pin GPIO_PIN_14
 // #define WITHOUT_INTERRUPTIONS 1
 #define USING_INTERRUPTIONS 1
+#include "screen.h"
+#include "MicroServo.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -82,60 +82,60 @@ void SystemClock_Config(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-inline void TIM6_reinit()
-{
- HAL_TIM_Base_Stop(&htim6);
- __HAL_TIM_SET_PRESCALER( &htim6, (SystemCoreClockInMHz-1) );
- __HAL_TIM_SET_COUNTER( &htim6, 0 );
- tim6_overflows = 0;
- HAL_TIM_Base_Start_IT(&htim6);
-}
+//inline void TIM6_reinit()
+//{
+// HAL_TIM_Base_Stop(&htim6);
+// __HAL_TIM_SET_PRESCALER( &htim6, (SystemCoreClockInMHz-1) );
+// __HAL_TIM_SET_COUNTER( &htim6, 0 );
+// tim6_overflows = 0;
+// HAL_TIM_Base_Start_IT(&htim6);
+//}
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-  if( htim->Instance == TIM6 )
-  {
-   ++tim6_overflows;
-  }
-}
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//  if( htim->Instance == TIM6 )
+//  {
+//   ++tim6_overflows;
+//  }
+//}
 
-inline uint32_t get_tim6_us()
-{
- __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE); //! Disable IRQ
- //__disable_irq();
- uint32_t res = tim6_overflows * 10000 + __HAL_TIM_GET_COUNTER(&htim6);
- //__enable_irq();
- __HAL_TIM_ENABLE_IT(&htim6, TIM_IT_UPDATE);
- return res;
-}
+//inline uint32_t get_tim6_us()
+//{
+// __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE); //! Disable IRQ
+// //__disable_irq();
+// uint32_t res = tim6_overflows * 10000 + __HAL_TIM_GET_COUNTER(&htim6);
+// //__enable_irq();
+// __HAL_TIM_ENABLE_IT(&htim6, TIM_IT_UPDATE);
+// return res;
+//}
 
-inline void udelay_TIM6(uint32_t useconds) {
- uint32_t before = get_tim6_us();
- while( get_tim6_us() < before+useconds){}
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
- if (GPIO_Pin == ECHO_Pin )
- {
-  switch (state) {
-  case WAITING_FOR_ECHO_START_S: {
-   echo_start =  get_tim6_us();
-   measured_time = 0;
-   state = WAITING_FOR_ECHO_STOP_S;
-   break;
-  }
-  case WAITING_FOR_ECHO_STOP_S: {
-   echo_finish = get_tim6_us();
-   measured_time = echo_finish - echo_start;
-   state = READING_DATA_S;
-   break;
-  }
-  default:
-   state = ERROR_S;
-  }
- }
-}
+//inline void udelay_TIM6(uint32_t useconds) {
+// uint32_t before = get_tim6_us();
+// while( get_tim6_us() < before+useconds){}
+//}
+//
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+//{
+// if (GPIO_Pin == ECHO_Pin )
+// {
+//  switch (state) {
+//  case WAITING_FOR_ECHO_START_S: {
+//   echo_start =  get_tim6_us();
+//   measured_time = 0;
+//   state = WAITING_FOR_ECHO_STOP_S;
+//   break;
+//  }
+//  case WAITING_FOR_ECHO_STOP_S: {
+//   echo_finish = get_tim6_us();
+//   measured_time = echo_finish - echo_start;
+//   state = READING_DATA_S;
+//   break;
+//  }
+//  default:
+//   state = ERROR_S;
+//  }
+// }
+//}
 
 /* USER CODE END PFP */
 
@@ -173,16 +173,16 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM3_Init();
   MX_SPI2_Init();
-  MX_TIM6_Init();
 
   /* USER CODE BEGIN 2 */
 
-  TIM6_reinit();
-   __disable_irq();
+  //TIM6_reinit();
+//   __disable_irq();
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
 
   LCD_INIT();
-  LCD_PRINT_UI();
+
+  //LCD_PRINT_UI();
 
 
   /* USER CODE END 2 */
@@ -191,90 +191,23 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  printf("Hello, World!\n");
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  int i;
+//	   int i;
+//
+//	  for (i=0; i<360; i=i+1) {
+//		  double t = i*3.1415926/180;
+//		  u_LCD_DRAWPOINT(i,(2-2*sin(t)+sin(t)*sqrt(fabs(cos(t)))/(sin(t)+1.4))*75);
+//	  }
 
-	  for (i=0; i<360; i=i+1) {
-		  double t = i*3.1415926/180;
-		  u_LCD_DRAWPOINT(i,(2-2*sin(t)+sin(t)*sqrt(fabs(cos(t)))/(sin(t)+1.4))*75);
-	  }
 
-	  uint8_t k;
-	  for (k=0;k<=180;) {
+	  for (uint8_t k=0;k<=180;) {
 		  Set_Position(k);
 		  k += 10;
 	  }
-	   HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_SET);
-	   udelay(16);
-	   HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_RESET);
-
-	   state = WAITING_FOR_ECHO_START_S;
-
-	   while( state == WAITING_FOR_ECHO_START_S && state != ERROR_S )
-	   {}
-	   if ( state == ERROR_S )
-	   {
-	    printf("Unexpected error while waiting for ECHO to start.\n");
-	    continue;
-	   }
-	   while( state == WAITING_FOR_ECHO_STOP_S && state != ERROR_S )
-	   {}
-	   if ( state == ERROR_S )
-	   {
-	    printf("Unexpected error while waiting for ECHO to finish.\n");
-	    continue;
-	   }
-
-	   uint32_t distance = measured_time/58;
-	   //! Увага, не забудьте додати:
-	   // monitor arm semihosting enable
-	   // До  Debug Configurations -> Startup Tab:
-	   printf("Time: %lu us, distance: %lu cm\n",
-	     measured_time,
-	     distance);
-#ifdef USING_INTERRUPTIONS
-	 HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_SET);
-	 udelay_TIM6(16);
-	 HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_RESET);
-
-	 state = WAITING_FOR_ECHO_START_S;
-	 __enable_irq();
-	 while( state == WAITING_FOR_ECHO_START_S && state != ERROR_S ){}
-	 if ( state == ERROR_S )
-	 {
-	  printf("Unexpected error while waiting for ECHO to start.\n");
-	  continue;
-	 }
-	 while( state == WAITING_FOR_ECHO_STOP_S && state != ERROR_S ){}
-	 __disable_irq();
-	 if ( state == ERROR_S )
-	 {
-	  printf("Unexpected error while waiting for ECHO to finish.\n");
-	  continue;
-	 }
-
-	 uint32_t distance = measured_time/58;
-	 printf("Time: %lu us, distance: %lu cm\n",
-	   measured_time,
-	   distance);
-#endif
-#ifdef WITHOUT_INTERRUPTIONS
-	  HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_SET);
-	  udelay_TIM6(16);
-	  HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_RESET);
-
-	  while(HAL_GPIO_ReadPin(ECHO_GPIO_Port, ECHO_Pin) == GPIO_PIN_RESET ){}
-	  uint32_t before = get_tim6_us();
-	  while(HAL_GPIO_ReadPin(ECHO_GPIO_Port, ECHO_Pin) == GPIO_PIN_SET ){}
-	  uint32_t pulse_time = get_tim6_us()-before;
-
-	  printf("Time: %lu us, distance: %lu cm\n",
-	     pulse_time,
-	     pulse_time/58);
-#endif
-  }
+	  LCD5110_printf(&lcd1, BLACK, "X = %d", 15);}
   /* USER CODE END 3 */
 
 }
