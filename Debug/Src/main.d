@@ -31,13 +31,7 @@ Src/main.o: ../Src/main.c \
  /home/inkognita/STMProjects/SemesterProject/Drivers/STM32F3xx_HAL_Driver/Inc/stm32f3xx_hal_tim_ex.h \
  /home/inkognita/STMProjects/SemesterProject/Inc/spi.h \
  /home/inkognita/STMProjects/SemesterProject/Inc/tim.h \
- /home/inkognita/STMProjects/SemesterProject/Inc/gpio.h ../Src/screen.h \
- /home/inkognita/STMProjects/SemesterProject/Inc/lcd5110.h \
- /home/inkognita/STMProjects/SemesterProject/Inc/lcd5110_ll.h \
- /home/inkognita/STMProjects/SemesterProject/Inc/spi.h \
- /home/inkognita/STMProjects/SemesterProject/Inc/gpio.h \
- /home/inkognita/STMProjects/SemesterProject/Inc/lcd5110_hal.h \
- ../Src/MicroServo.h ../Src/echo_locator.h
+ /home/inkognita/STMProjects/SemesterProject/Inc/gpio.h
 
 /home/inkognita/STMProjects/SemesterProject/Inc/main.h:
 
@@ -104,19 +98,3 @@ Src/main.o: ../Src/main.c \
 /home/inkognita/STMProjects/SemesterProject/Inc/tim.h:
 
 /home/inkognita/STMProjects/SemesterProject/Inc/gpio.h:
-
-../Src/screen.h:
-
-/home/inkognita/STMProjects/SemesterProject/Inc/lcd5110.h:
-
-/home/inkognita/STMProjects/SemesterProject/Inc/lcd5110_ll.h:
-
-/home/inkognita/STMProjects/SemesterProject/Inc/spi.h:
-
-/home/inkognita/STMProjects/SemesterProject/Inc/gpio.h:
-
-/home/inkognita/STMProjects/SemesterProject/Inc/lcd5110_hal.h:
-
-../Src/MicroServo.h:
-
-../Src/echo_locator.h:

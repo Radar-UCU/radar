@@ -49,18 +49,35 @@
 #define ECHO_GPIO_Port GPIOD
 #define ECHO_Pin GPIO_PIN_14
 // #define WITHOUT_INTERRUPTIONS 1
-#define USING_INTERRUPTIONS 1
-#include "screen.h"
-#include "MicroServo.h"
-#include "echo_locator.h"
-Echo_Locator * echo_locator;
+//#define USING_INTERRUPTIONS 1
+//#include "screen.h"
+//#include "MicroServo.h"
+// #include "echo_locator.h"
+//Echo_Locator * echo_locator;
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+
 volatile uint32_t tim6_overflows = 0;
+typedef enum state_t {
+ IDLE_S,
+ TRIGGERING_S,
+ WAITING_FOR_ECHO_START_S,
+ WAITING_FOR_ECHO_STOP_S,
+ TRIG_NOT_WENT_LOW_S,
+ ECHO_TIMEOUT_S,
+ ECHO_NOT_WENT_LOW_S,
+ READING_DATA_S,
+ ERROR_S
+} state_t;
+
+volatile state_t state = IDLE_S;
+volatile uint32_t echo_start;
+volatile uint32_t echo_finish;
+volatile uint32_t measured_time;
 
 /* USER CODE END PV */
 
@@ -105,7 +122,24 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
  if (GPIO_Pin == ECHO_Pin)
  {
-	 echo_locator_callback(echo_locator);
+	 //echo_locator_callback(echo_locator);
+
+	   switch (state) {
+	   case WAITING_FOR_ECHO_START_S: {
+	    echo_start =  get_tim6_us();
+	    measured_time = 0;
+	    state = WAITING_FOR_ECHO_STOP_S;
+	    break;
+	   }
+	   case WAITING_FOR_ECHO_STOP_S: {
+	    echo_finish = get_tim6_us();
+	    measured_time = echo_finish - echo_start;
+	    state = READING_DATA_S;
+	    break;
+	   }
+	   default:
+	    state = ERROR_S;
+	 }
  }
 }
 
@@ -151,13 +185,13 @@ int main(void)
 
 
 
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  //HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   TIM6_reinit();
-  LCD_INIT();
+  //LCD_INIT();
 //  __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE);
 
   //LCD_PRINT_UI();
-  echo_locator = Echo_Locator__create(ECHO_GPIO_Port, ECHO_Pin, TRIG_GPIO_Port , TRIG_Pin);
+  //echo_locator = Echo_Locator__create(ECHO_GPIO_Port, ECHO_Pin, TRIG_GPIO_Port , TRIG_Pin);
 
   /* USER CODE END 2 */
 
@@ -176,9 +210,33 @@ int main(void)
 //		  u_LCD_DRAWPOINT(i,(2-2*sin(t)+sin(t)*sqrt(fabs(cos(t)))/(sin(t)+1.4))*75);
 //	  }
 	  //printf("%d\n",echo_locatorr->echo_port);
-	  printf("Meassured time: %d\n", measure_distance(echo_locator));
+	  //printf("Measured distance: %d\n", measure_distance(echo_locator));
 
 	  //LCD5110_printf(&lcd1, BLACK, "X = %d", 15);}
+	  HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_SET);
+	 	 udelay_TIM6(16);
+	 	 HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_RESET);
+
+	 	 state = WAITING_FOR_ECHO_START_S;
+	 	 __enable_irq();
+	 	 while( state == WAITING_FOR_ECHO_START_S && state != ERROR_S ){}
+	 	 if ( state == ERROR_S )
+	 	 {
+	 	  printf("Unexpected error while waiting for ECHO to start.\n");
+	 	  continue;
+	 	 }
+	 	 while( state == WAITING_FOR_ECHO_STOP_S && state != ERROR_S ){}
+	 	 __disable_irq();
+	 	 if ( state == ERROR_S )
+	 	 {
+	 	  printf("Unexpected error while waiting for ECHO to finish.\n");
+	 	  continue;
+	 	 }
+
+	 	 uint32_t distance = measured_time/58;
+	 	 printf("Time: %lu us, distance: %lu cm\n",
+	 	   measured_time,
+	 distance);
   }
   /* USER CODE END 3 */
 
@@ -194,13 +252,12 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
