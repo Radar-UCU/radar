@@ -1,13 +1,14 @@
 #include "echo_locator.h"
 
+
 typedef enum state_t {
  IDLE_S,
- TRIGGERING_S,
+// TRIGGERING_S,
  WAITING_FOR_ECHO_START_S,
  WAITING_FOR_ECHO_STOP_S,
- TRIG_NOT_WENT_LOW_S,
- ECHO_TIMEOUT_S,
- ECHO_NOT_WENT_LOW_S,
+// TRIG_NOT_WENT_LOW_S,
+// ECHO_TIMEOUT_S,
+// ECHO_NOT_WENT_LOW_S,
  READING_DATA_S,
  ERROR_S
 } state_t;
@@ -45,28 +46,26 @@ Echo_Locator* Echo_Locator__create(uint32_t echo_port, uint32_t echo_pin,
 }
 
 uint32_t measure_distance(Echo_Locator* self){
-	  HAL_GPIO_WritePin(self->trig_port, self->trig_pin, GPIO_PIN_SET);
-	  udelay_TIM6(16);
-	  HAL_GPIO_WritePin(self->trig_port, self->trig_pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(self->trig_port, self->trig_pin, GPIO_PIN_SET);
+	udelay_TIM6(16);
+	HAL_GPIO_WritePin(self->trig_port, self->trig_pin, GPIO_PIN_RESET);
 
-	  	 self->state = WAITING_FOR_ECHO_START_S;
-	  	 //__enable_irq();
-	  	 while( self->state == WAITING_FOR_ECHO_START_S && self->state != ERROR_S ){}
-	  	 if ( self->state == ERROR_S )
-	  	 {
-	  	  printf("Unexpected error while waiting for ECHO to start.\n");
-	  	  // continue;
-	  	 }
-	  	 while( self->state == WAITING_FOR_ECHO_STOP_S && self->state != ERROR_S ){}
-	  	 //__disable_irq();
-	  	 if ( self->state == ERROR_S )
-	  	 {
-	  	  printf("Unexpected error while waiting for ECHO to finish.\n");
-	  	  //continue;
-	  	 }
+	self->state = WAITING_FOR_ECHO_START_S;
+	//__enable_irq();
+	while( self->state == WAITING_FOR_ECHO_START_S && self->state != ERROR_S ){}
+	if ( self->state == ERROR_S ) {
+		printf("Unexpected error while waiting for ECHO to start.\n");
+		return -1;
+	}
+	while( self->state == WAITING_FOR_ECHO_STOP_S && self->state != ERROR_S ){}
+	//__disable_irq();
+	if ( self->state == ERROR_S ) {
+		printf("Unexpected error while waiting for ECHO to finish.\n");
+		return -1;
+	}
 
-	  	 uint32_t distance = self->measured_time/58;
-	  	 return distance;
+	uint32_t distance = self->measured_time / 58;
+	return distance;
 }
 
 void echo_locator_callback(Echo_Locator* self){

@@ -155,8 +155,15 @@ int main(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   TIM6_reinit();
   LCD_INIT();
+
+
+  LCD_PRINT_UI();
+
   echo_locator = Echo_Locator__create(ECHO_GPIO_Port, ECHO_Pin, TRIG_GPIO_Port , TRIG_Pin);
 
+  double angle = 0;
+
+  Set_Min_Position();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -166,7 +173,15 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-	  printf("Measured distance: %d\n", measure_distance(echo_locator));
+
+	  angle = ((int)(angle + 10)) % 360;
+	  if (angle > 180) {
+		  Set_Position(360-angle);
+	  } else {
+		  Set_Position(angle);
+	  }
+	  u_LCD_DRAWPOINT(angle,measure_distance(echo_locator));
+
 
   }
   /* USER CODE END 3 */
@@ -183,12 +198,13 @@ void SystemClock_Config(void)
 
     /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
+  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);

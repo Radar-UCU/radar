@@ -17,7 +17,7 @@ void LCD_INIT(void) {
 	  LCD5110_init(&lcd1.hw_conf, LCD5110_NORMAL_MODE, 0x40, 2, 3);
 }
 
-void LCD_PRINT_UI(void) {
+void LCD_PRINT_UI() {
 
 
 	  rect_t left_border={0,0, 18, 48};
@@ -34,7 +34,7 @@ void LCD_PRINT_UI(void) {
 
 }
 double scale_distance(double dist) {
-	return dist/200*22;
+	return dist/50*22;
 }
 
 void u_LCD_DRAWPOINT(double angle, double distance) {
@@ -42,8 +42,8 @@ void u_LCD_DRAWPOINT(double angle, double distance) {
 
 
 
-	int x = (int) (cos(angle * pi / 180)*scale_distance(distance) + 41.5);
-	int y = (int) (sin(angle * pi / 180)*scale_distance(distance) + 32.5);
+	int x = (int) (cos(angle * pi / 180)*scale_distance(distance) + 42.5);
+	int y = (int) (sin(angle * pi / 180)*scale_distance(distance) + 22.5);
 
 
 	rect_t point = {x,y, 1, 1};
