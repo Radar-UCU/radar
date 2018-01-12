@@ -56,11 +56,16 @@
 #define LCD1_CS_GPIO_Port GPIOB
 #define LCD1_DATA_Pin GPIO_PIN_15
 #define LCD1_DATA_GPIO_Port GPIOB
-#define TRIG_Pin_Pin GPIO_PIN_13
-#define TRIG_Pin_GPIO_Port GPIOD
-#define ECHOI_Pin_Pin GPIO_PIN_14
-#define ECHOI_Pin_GPIO_Port GPIOD
-#define ECHOI_Pin_EXTI_IRQn EXTI15_10_IRQn
+#define TRIG2_Pin GPIO_PIN_11
+#define TRIG2_GPIO_Port GPIOD
+#define ECHOI2_Pin GPIO_PIN_12
+#define ECHOI2_GPIO_Port GPIOD
+#define ECHOI2_EXTI_IRQn EXTI15_10_IRQn
+#define TRIG1_Pin GPIO_PIN_13
+#define TRIG1_GPIO_Port GPIOD
+#define ECHOI1_Pin GPIO_PIN_14
+#define ECHOI1_GPIO_Port GPIOD
+#define ECHOI1_EXTI_IRQn EXTI15_10_IRQn
 
 /* USER CODE BEGIN Private defines */
 

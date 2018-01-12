@@ -48,10 +48,27 @@
 #include "echo_locator.h"
 
 #define SystemCoreClockInMHz (SystemCoreClock/1000000)
-#define TRIG_GPIO_Port GPIOD
-#define TRIG_Pin GPIO_PIN_13
-#define ECHO_GPIO_Port GPIOD
-#define ECHO_Pin GPIO_PIN_14
+#define ECHOPort GPIOD
+
+/*
+ * Echo_Locator
+ * ECHOPort GPIOD
+ * echo_locator_1 ECHOI1_Pin - PD14; TRIG1_Pin - PD13; ECHOPort
+ * echo_locator_2 ECHOI2_Pin - PD12; TRIG2_Pin - PD11; ECHOPort
+ *
+ * Display/Screen
+ * 1. GND - GND
+ * 2. Light - GND
+ * 3. VCC - VCC
+ * 4. CLK - PB13 - LCD1_CLK_Pin
+ * 5. DIN - PB15 - LCD1_DATA_Pin
+ * 6. DC - PB12 - LCD1_DC_Pin
+ * 7. CE - PB14 - LCD1_CS_Pin
+ * 8. RST - PB11 - LCD1_RST_Pin
+ *
+ * MicroServo
+ * TIM3_CH2 - PE3
+ */
 
 /* USER CODE END Includes */
 
@@ -60,7 +77,8 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
-Echo_Locator * echo_locator;
+Echo_Locator * echo_locator_1;
+Echo_Locator * echo_locator_2;
 volatile uint32_t tim6_overflows = 0;
 
 /* USER CODE END PV */
@@ -104,9 +122,13 @@ void udelay_TIM6(uint32_t useconds) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
- if (GPIO_Pin == ECHO_Pin)
+ if (GPIO_Pin == ECHOI1_Pin)
  {
-	 echo_locator_callback(echo_locator);
+	 echo_locator_callback(echo_locator_1);
+ }
+ else if(GPIO_Pin == ECHOI2_Pin)
+ {
+	 echo_locator_callback(echo_locator_2);
  }
 }
 
@@ -159,7 +181,8 @@ int main(void)
 
   LCD_PRINT_UI();
 
-  echo_locator = Echo_Locator__create(ECHO_GPIO_Port, ECHO_Pin, TRIG_GPIO_Port , TRIG_Pin);
+  echo_locator_1 = Echo_Locator__create(ECHOPort, ECHOI1_Pin, ECHOPort, TRIG1_Pin);
+  echo_locator_2 = Echo_Locator__create(ECHOPort, ECHOI2_Pin, ECHOPort, TRIG2_Pin);
 
   int angle = 0;
 
@@ -180,8 +203,8 @@ int main(void)
 	  } else {
 		  Set_Position(	angle);
 	  }
-	  u_LCD_DRAWPOINT(angle % 180,measure_distance(echo_locator));
-	  u_LCD_DRAWPOINT(180+(angle % 180),measure_distance(echo_locator));
+	  u_LCD_DRAWPOINT(angle % 180,measure_distance(echo_locator_1));
+	  u_LCD_DRAWPOINT(180+(angle % 180),measure_distance(echo_locator_2));
 
 
   }
