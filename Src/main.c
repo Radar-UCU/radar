@@ -214,29 +214,17 @@ int main(void)
 
 	  //LCD5110_printf(&lcd1, BLACK, "X = %d", 15);}
 	  HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_SET);
-	 	 udelay_TIM6(16);
-	 	 HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_RESET);
+		  udelay_TIM6(16);
+		  HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_RESET);
 
-	 	 state = WAITING_FOR_ECHO_START_S;
-	 	 __enable_irq();
-	 	 while( state == WAITING_FOR_ECHO_START_S && state != ERROR_S ){}
-	 	 if ( state == ERROR_S )
-	 	 {
-	 	  printf("Unexpected error while waiting for ECHO to start.\n");
-	 	  continue;
-	 	 }
-	 	 while( state == WAITING_FOR_ECHO_STOP_S && state != ERROR_S ){}
-	 	 __disable_irq();
-	 	 if ( state == ERROR_S )
-	 	 {
-	 	  printf("Unexpected error while waiting for ECHO to finish.\n");
-	 	  continue;
-	 	 }
+		  while(HAL_GPIO_ReadPin(ECHO_GPIO_Port, ECHO_Pin) == GPIO_PIN_RESET ){}
+		  uint32_t before = get_tim6_us();
+		  while(HAL_GPIO_ReadPin(ECHO_GPIO_Port, ECHO_Pin) == GPIO_PIN_SET ){}
+		  uint32_t pulse_time = get_tim6_us()-before;
 
-	 	 uint32_t distance = measured_time/58;
-	 	 printf("Time: %lu us, distance: %lu cm\n",
-	 	   measured_time,
-	 distance);
+		  printf("Time: %lu us, distance: %lu cm\n",
+		     pulse_time,
+	pulse_time/58);
   }
   /* USER CODE END 3 */
 
