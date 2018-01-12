@@ -43,17 +43,16 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
+#include "screen.h"
+#include "micro_servo.h"
+#include "echo_locator.h"
+
 #define SystemCoreClockInMHz (SystemCoreClock/1000000)
 #define TRIG_GPIO_Port GPIOD
 #define TRIG_Pin GPIO_PIN_13
 #define ECHO_GPIO_Port GPIOD
 #define ECHO_Pin GPIO_PIN_14
-// #define WITHOUT_INTERRUPTIONS 1
-//#define USING_INTERRUPTIONS 1
-//#include "screen.h"
-//#include "MicroServo.h"
-// #include "echo_locator.h"
-//Echo_Locator * echo_locator;
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -61,23 +60,8 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
+Echo_Locator * echo_locator;
 volatile uint32_t tim6_overflows = 0;
-typedef enum state_t {
- IDLE_S,
- TRIGGERING_S,
- WAITING_FOR_ECHO_START_S,
- WAITING_FOR_ECHO_STOP_S,
- TRIG_NOT_WENT_LOW_S,
- ECHO_TIMEOUT_S,
- ECHO_NOT_WENT_LOW_S,
- READING_DATA_S,
- ERROR_S
-} state_t;
-
-volatile state_t state = IDLE_S;
-volatile uint32_t echo_start;
-volatile uint32_t echo_finish;
-volatile uint32_t measured_time;
 
 /* USER CODE END PV */
 
@@ -107,10 +91,10 @@ uint32_t get_tim6_us()
 {
  __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE); //! Disable IRQ
  //__disable_irq();
- uint32_t res = tim6_overflows * 10000 + __HAL_TIM_GET_COUNTER(&htim6);
+ uint32_t total_tick = tim6_overflows * 10000 + __HAL_TIM_GET_COUNTER(&htim6);
  //__enable_irq();
  __HAL_TIM_ENABLE_IT(&htim6, TIM_IT_UPDATE);
- return res;
+ return total_tick;
 }
 
 void udelay_TIM6(uint32_t useconds) {
@@ -122,24 +106,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
  if (GPIO_Pin == ECHO_Pin)
  {
-	 //echo_locator_callback(echo_locator);
-
-	   switch (state) {
-	   case WAITING_FOR_ECHO_START_S: {
-	    echo_start =  get_tim6_us();
-	    measured_time = 0;
-	    state = WAITING_FOR_ECHO_STOP_S;
-	    break;
-	   }
-	   case WAITING_FOR_ECHO_STOP_S: {
-	    echo_finish = get_tim6_us();
-	    measured_time = echo_finish - echo_start;
-	    state = READING_DATA_S;
-	    break;
-	   }
-	   default:
-	    state = ERROR_S;
-	 }
+	 echo_locator_callback(echo_locator);
  }
 }
 
@@ -185,13 +152,10 @@ int main(void)
 
 
 
-  //HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   TIM6_reinit();
-  //LCD_INIT();
-//  __HAL_TIM_DISABLE_IT(&htim6, TIM_IT_UPDATE);
-
-  //LCD_PRINT_UI();
-  //echo_locator = Echo_Locator__create(ECHO_GPIO_Port, ECHO_Pin, TRIG_GPIO_Port , TRIG_Pin);
+  LCD_INIT();
+  echo_locator = Echo_Locator__create(ECHO_GPIO_Port, ECHO_Pin, TRIG_GPIO_Port , TRIG_Pin);
 
   /* USER CODE END 2 */
 
@@ -199,32 +163,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //printf("Hello, World!\n");
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-//	   int i;
-//
-//	  for (i=0; i<360; i=i+1) {
-//		  double t = i*3.1415926/180;
-//		  u_LCD_DRAWPOINT(i,(2-2*sin(t)+sin(t)*sqrt(fabs(cos(t)))/(sin(t)+1.4))*75);
-//	  }
-	  //printf("%d\n",echo_locatorr->echo_port);
-	  //printf("Measured distance: %d\n", measure_distance(echo_locator));
+	  printf("Measured distance: %d\n", measure_distance(echo_locator));
 
-	  //LCD5110_printf(&lcd1, BLACK, "X = %d", 15);}
-	  HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_SET);
-		  udelay_TIM6(16);
-		  HAL_GPIO_WritePin(TRIG_GPIO_Port, TRIG_Pin, GPIO_PIN_RESET);
-
-		  while(HAL_GPIO_ReadPin(ECHO_GPIO_Port, ECHO_Pin) == GPIO_PIN_RESET ){}
-		  uint32_t before = get_tim6_us();
-		  while(HAL_GPIO_ReadPin(ECHO_GPIO_Port, ECHO_Pin) == GPIO_PIN_SET ){}
-		  uint32_t pulse_time = get_tim6_us()-before;
-
-		  printf("Time: %lu us, distance: %lu cm\n",
-		     pulse_time,
-	pulse_time/58);
   }
   /* USER CODE END 3 */
 

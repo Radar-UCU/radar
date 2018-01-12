@@ -4,7 +4,7 @@
 LCD5110_display lcd1;
 
 
-void LCD_INIT() {
+void LCD_INIT(void) {
 
 	lcd1.hw_conf.spi_handle = &hspi2;
 	  lcd1.hw_conf.spi_cs_pin =  LCD1_CS_Pin;
@@ -17,7 +17,7 @@ void LCD_INIT() {
 	  LCD5110_init(&lcd1.hw_conf, LCD5110_NORMAL_MODE, 0x40, 2, 3);
 }
 
-void LCD_PRINT_UI() {
+void LCD_PRINT_UI(void) {
 
 
 	  rect_t left_border={0,0, 18, 48};
