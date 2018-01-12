@@ -23,4 +23,7 @@ uint32_t measure_distance(Echo_Locator* self);
 // Callback for EXTI
 void echo_locator_callback(Echo_Locator* self);
 
+// Filtered Measurement with accuracy
+uint32_t filtered_measurement(Echo_Locator* self, int accuracy);
+
 #endif

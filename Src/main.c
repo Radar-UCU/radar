@@ -203,8 +203,8 @@ int main(void)
 	  } else {
 		  Set_Position(	angle);
 	  }
-	  u_LCD_DRAWPOINT(angle % 180,measure_distance(echo_locator_1));
-	  u_LCD_DRAWPOINT(180+(angle % 180),measure_distance(echo_locator_2));
+	  u_LCD_DRAWPOINT(angle % 180, filtered_measurement(echo_locator_1, 5));
+	  u_LCD_DRAWPOINT(180+(angle % 180), filtered_measurement(echo_locator_2, 5));
 
 
   }

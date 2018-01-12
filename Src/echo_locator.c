@@ -68,6 +68,40 @@ uint32_t measure_distance(Echo_Locator* self){
 	return distance;
 }
 
+void swap(int *xp, int *yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+// A function to implement bubble sort
+void bubbleSort(int arr[], int n)
+{
+   int i, j;
+   for (i = 0; i < n-1; i++)
+
+       // Last i elements are already in place
+       for (j = 0; j < n-i-1; j++)
+           if (arr[j] > arr[j+1])
+              swap(&arr[j], &arr[j+1]);
+}
+
+uint32_t filtered_measurement(Echo_Locator* self, int n){
+	if(!(n%2)){
+		n--;
+	}
+	if(n < 5){
+		n = 5;
+	}
+	uint32_t results[n];
+	for(int i=0; i<n; i++){
+		results[i] = measure_distance(self);
+	}
+	bubbleSort(results, n);
+	return results[n/2];
+}
+
 void echo_locator_callback(Echo_Locator* self){
 	switch (self->state) {
 	  case WAITING_FOR_ECHO_START_S: {
