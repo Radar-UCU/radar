@@ -161,7 +161,7 @@ int main(void)
 
   echo_locator = Echo_Locator__create(ECHO_GPIO_Port, ECHO_Pin, TRIG_GPIO_Port , TRIG_Pin);
 
-  double angle = 0;
+  int angle = 0;
 
   Set_Min_Position();
   /* USER CODE END 2 */
@@ -178,9 +178,10 @@ int main(void)
 	  if (angle > 180) {
 		  Set_Position(360-angle);
 	  } else {
-		  Set_Position(angle);
+		  Set_Position(	angle);
 	  }
-	  u_LCD_DRAWPOINT(angle,measure_distance(echo_locator));
+	  u_LCD_DRAWPOINT(angle % 180,measure_distance(echo_locator));
+	  u_LCD_DRAWPOINT(180+(angle % 180),measure_distance(echo_locator));
 
 
   }
