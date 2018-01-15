@@ -10,8 +10,8 @@
 void Set_Position(uint8_t pos) {
 	//HAL_Delay(1500);
 	udelay_TIM6(100000);
-	uint32_t tmp=(SERVO_MICROS_MAX - SERVO_MICROS_MIN) / 180 ;
-	TIM3->CCR2 = SERVO_MICROS_MIN + tmp * pos;
+	double tmp=((double)(SERVO_MICROS_MAX - SERVO_MICROS_MIN)) / 180.0 ;
+	TIM3->CCR2 = SERVO_MICROS_MIN + (double)tmp * pos;
 }
 
 void Set_Min_Position(void) {
