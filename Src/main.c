@@ -197,7 +197,7 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 
-	  angle = ((int)(angle + 10)) % 360;
+	  angle = ((int)(angle + 1)) % 360;
 	  if (angle > 180) {
 		  Set_Position(360-angle);
 	  } else {
@@ -205,7 +205,7 @@ int main(void)
 	  }
 	  u_LCD_DRAWPOINT(angle % 180, filtered_measurement(echo_locator_1, 5));
 	  u_LCD_DRAWPOINT(180+(angle % 180), filtered_measurement(echo_locator_2, 5));
-
+//	  udelay_TIM6(1000);
 
   }
   /* USER CODE END 3 */
