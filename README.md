@@ -14,4 +14,4 @@ Collaborators:
 - Iryna Kostyshyn
 - Victoria Yuzkiv
 
-Links in the collaborators tab.
+Links in the collaborators tab
